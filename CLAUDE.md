@@ -26,7 +26,7 @@ commented blocks of `public/style.css`; the original pages are otherwise unchang
 - `migrations/` — schema (`0001` init, `0002` auth, `0003` categories + videos, `0004` gallery, `0005` itinerary details).
   `seed.sql` — content extracted from the original HTML (18 tours, 6 journal posts).
 - Extra seed files (all idempotent, content written for the tour pages; see below): `seed-gallery.sql`,
-  `seed-cultural-pages.sql`, `seed-trekking-pages.sql`, `seed-luxury-pages.sql`.
+  `seed-cultural-pages.sql`, `seed-trekking-pages.sql`, `seed-luxury-pages.sql`, `seed-blog-posts.sql` (journal articles; only fills posts whose body is empty).
 - `src/lib/gallery-db.ts` (gallery), `tour-filter.ts` (All Tours filtering/sorting), `videos-db.ts`, `categories-db.ts`.
 
 ## Database-driven content
@@ -122,6 +122,7 @@ npm run db:gallery-seed:local         # 33 starter gallery photos
 npm run db:cultural-pages:local       # full pages for the 5 card-only cultural tours
 npm run db:trekking-pages:local       # full pages for 5 treks + trek details for the Druk Path days
 npm run db:luxury-pages:local         # full pages for the 6 luxury tours
+npm run db:blog-pages:local           # article pages for the 4 journal cards that had none
 ```
 
 On the live database run the same files with `wrangler d1 execute altara-db --remote --file=<file>` after

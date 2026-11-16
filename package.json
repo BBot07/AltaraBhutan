@@ -24,7 +24,8 @@
     "db:cultural-pages:local": "wrangler d1 execute altara-db --local --file=seed-cultural-pages.sql",
     "db:trekking-pages:local": "wrangler d1 execute altara-db --local --file=seed-trekking-pages.sql",
     "db:luxury-images:local": "wrangler d1 execute altara-db --local --file=seed-luxury-images.sql",
-    "db:luxury-pages:local": "wrangler d1 execute altara-db --local --file=seed-luxury-pages.sql"
+    "db:luxury-pages:local": "wrangler d1 execute altara-db --local --file=seed-luxury-pages.sql",
+    "db:blog-pages:local": "wrangler d1 execute altara-db --local --file=seed-blog-posts.sql"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.4",

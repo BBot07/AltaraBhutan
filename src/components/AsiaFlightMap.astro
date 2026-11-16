@@ -67,7 +67,13 @@ const infoJson = JSON.stringify({
   </div>
 
   <div class="fm-stage">
-    <div class="fm-scroll">
+    <div class="fm-zoom" role="group" aria-label="Zoom the map">
+      <button type="button" class="fm-zbtn" data-zoom="in" aria-label="Zoom in">+</button>
+      <button type="button" class="fm-zbtn" data-zoom="out" aria-label="Zoom out">&minus;</button>
+      <button type="button" class="fm-zbtn fm-zreset" data-zoom="reset" aria-label="Reset the map">Reset</button>
+    </div>
+    <div class="fm-scroll" data-scroll>
+     <div class="fm-canvas" data-canvas>
       <svg class="fm-svg" viewBox={VB.join(' ')} data-vbd={VB.join(' ')} data-vbm="180 30 715 930" role="group" aria-label="Map of Asia showing flight routes into Paro, Bhutan" data-filter="all">
         <g class="fm-land">
           {countries.map((c: any) => <path d={c.d} class:list={{ 'is-bt': c.name === 'Bhutan' }}><title>{c.name}</title></path>)}
@@ -98,10 +104,11 @@ const infoJson = JSON.stringify({
           </g>
         </g>
       </svg>
+      <div class="fm-card" data-card role="dialog" aria-live="polite" hidden></div>
+     </div>
     </div>
-    <div class="fm-card" data-card role="dialog" aria-live="polite" hidden></div>
   </div>
-  <p class="fm-note">Tap an airport for details.</p>
+  <p class="fm-note">Use + and &minus; to zoom, drag to move the map, and tap an airport for details.</p>
   <script type="application/json" data-info set:html={infoJson} />
 </div>
   </div>
@@ -122,7 +129,14 @@ const infoJson = JSON.stringify({
   .fm-chip:hover { background: rgb(22 48 42 / .1); }
   .fm-chip[aria-pressed='true'] { background: #16302A; color: #FAFAF8; border-color: #16302A; }
   .fm-stage { position: relative; width: 100%; max-width: 1240px; margin-inline: auto; }
-  .fm-svg { display: block; width: 100%; height: auto; max-height: 88vh; margin-inline: auto; touch-action: manipulation;
+  .fm-scroll { overflow: auto; max-height: 88vh; scrollbar-width: thin; overscroll-behavior: auto; }
+  .fm-canvas { position: relative; margin-inline: auto; }
+  .fm-zoom { position: absolute; z-index: 4; top: .6rem; right: .6rem; display: flex; flex-direction: column; gap: 4px; }
+  .fm-zbtn { min-width: 40px; height: 40px; padding: 0 .6rem; display: inline-flex; align-items: center; justify-content: center; font: 400 22px/1 var(--font-body); color: #16302A; background: #FAFAF8; border: 1px solid rgb(22 48 42 / .35); border-radius: 0; cursor: pointer; transition: background .2s, color .2s; }
+  .fm-zbtn:hover { background: #16302A; color: #FAFAF8; }
+  .fm-zbtn[disabled] { opacity: .35; pointer-events: none; }
+  .fm-zreset { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+  .fm-svg { display: block; width: 100%; height: auto; touch-action: pan-x pan-y;
     -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 4%, #000 96%, transparent);
     -webkit-mask-composite: source-in;
     mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 4%, #000 96%, transparent);
@@ -164,17 +178,22 @@ const infoJson = JSON.stringify({
   .fm-card[data-x='right'][data-y='mid'] { transform: translate(20px, -30%); }
   .fm-note { display: none; margin: .75rem 0 0; font-size: 12px; opacity: .7; text-align: center; }
   @media (max-width: 640px) {
-    .fm-names, .fm-lbl { display: none; }
-    .fm-route { stroke-width: 3; stroke-dasharray: 8 7; }
-    .fm-svg[data-active] .fm-route.on { stroke-width: 4; }
-    .fm-land path { stroke-width: 1.2; }
-    .fm-hit { r: 26px; }
-    .fm-ring { r: 20px; stroke-width: 3px; }
-    .fm-dot { r: 14px; stroke-width: 3px; }
-    .fm-pdot { r: 11px; stroke-width: 3px; }
-    .fm-pulse { r: 14px; stroke-width: 3px; }
-    .fm-ico { transform: translate(-9px, -9px) scale(.75); }
-    .fm-card[data-x][data-y] { position: relative; left: auto; top: auto; width: auto; transform: none !important; margin-top: .75rem; }
+    /* Phones: the map keeps a readable size inside a draggable frame; the + / - buttons zoom it. */
+    .fm-scroll { max-height: min(72vh, 560px); border: 1px solid rgb(22 48 42 / .15); background: rgb(22 48 42 / .03); }
+    .fm-svg { -webkit-mask-image: none; mask-image: none; }
+    .fm-names text { font-size: 12px; }
+    .fm-names .fm-sea { font-size: 11px; }
+    .fm-lbl { font-size: 11px; }
+    .fm-plbl { font-size: 12px; }
+    .fm-route { stroke-width: 1.8; stroke-dasharray: 5 5; }
+    .fm-svg[data-active] .fm-route.on { stroke-width: 2.6; }
+    .fm-hit { r: 20px; }
+    .fm-ring { r: 11px; stroke-width: 1.8px; }
+    .fm-dot { r: 7px; stroke-width: 1.5px; }
+    .fm-pdot { r: 6px; stroke-width: 1.5px; }
+    .fm-pulse { r: 8px; stroke-width: 1.5px; }
+    .fm-ico { transform: translate(-3px, -3px) scale(.25); }
+    .fm-card { width: min(230px, 62vw); }
     .fm-note { display: block; }
   }
   @media (prefers-reduced-motion: reduce) { .fm-route, .fm-pulse { animation: none; } }
@@ -200,9 +219,56 @@ const infoJson = JSON.stringify({
     const stops = [...root.querySelectorAll<SVGGElement>('.fm-stop')];
     const routes = [...root.querySelectorAll<SVGPathElement>('.fm-route')];
     const mq = window.matchMedia('(max-width: 640px)');
-    const fit = () => svg.setAttribute('viewBox', (mq.matches ? svg.dataset.vbm : svg.dataset.vbd)!);
-    fit(); mq.addEventListener('change', fit);
+    svg.setAttribute('viewBox', svg.dataset.vbd!);
+    const scroller = root.querySelector<HTMLElement>('[data-scroll]')!;
+    const canvas = root.querySelector<HTMLElement>('[data-canvas]')!;
+    const zbtns = [...root.querySelectorAll<HTMLButtonElement>('.fm-zbtn')];
+    const vb = svg.dataset.vbd!.split(' ').map(Number);
+    let zoom = 1;
+    const MAX = 3;
+    // Width of the map at zoom 1: the container on desktop (never taller than the screen), a fixed width on phones.
+    const base = () => (mq.matches ? 920 : Math.min(scroller.clientWidth, window.innerHeight * 0.88 * (vb[2] / vb[3])));
+    const minZoom = () => (mq.matches ? Math.min(1, scroller.clientWidth / base()) : 1);
+    const apply = (z: number, cx = 0.5, cy = 0.5) => {
+      zoom = Math.max(minZoom(), Math.min(MAX, z));
+      canvas.style.width = `${Math.round(base() * zoom)}px`;
+      scroller.scrollLeft = cx * canvas.offsetWidth - scroller.clientWidth / 2;
+      scroller.scrollTop = cy * canvas.offsetHeight - scroller.clientHeight / 2;
+      zbtns.forEach((b) => {
+        if (b.dataset.zoom === 'in') b.disabled = zoom >= MAX - 0.001;
+        if (b.dataset.zoom === 'out') b.disabled = zoom <= minZoom() + 0.001;
+      });
+    };
+    const centreNow = () => ({
+      cx: (scroller.scrollLeft + scroller.clientWidth / 2) / canvas.offsetWidth,
+      cy: (scroller.scrollTop + scroller.clientHeight / 2) / canvas.offsetHeight,
+    });
+    const onParo = () => apply(1, +pos.PBH.l / 100, +pos.PBH.t / 100);
+    zbtns.forEach((b) => b.addEventListener('click', () => {
+      const act = b.dataset.zoom;
+      if (act === 'reset') return onParo();
+      const c = centreNow();
+      apply(act === 'in' ? zoom * 1.4 : zoom / 1.4, c.cx, c.cy);
+    }));
+    // Desktop: ctrl + wheel zooms toward the pointer.
+    scroller.addEventListener('wheel', (e) => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      const r = canvas.getBoundingClientRect();
+      apply(zoom * (e.deltaY < 0 ? 1.15 : 1 / 1.15), (e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+    }, { passive: false });
+    // Bring the details card fully into view inside the scrolling frame.
+    const reveal = () => {
+      const f = scroller.getBoundingClientRect(), c = card.getBoundingClientRect(), pad = 12;
+      if (c.left < f.left + pad) scroller.scrollLeft -= f.left + pad - c.left;
+      else if (c.right > f.right - pad) scroller.scrollLeft += c.right - (f.right - pad);
+      if (c.top < f.top + pad) scroller.scrollTop -= f.top + pad - c.top;
+      else if (c.bottom > f.bottom - pad) scroller.scrollTop += c.bottom - (f.bottom - pad);
+    };
     let current: string | null = null;
+    mq.addEventListener('change', onParo);
+    window.addEventListener('resize', () => { const c = centreNow(); apply(zoom, c.cx, c.cy); });
+    onParo();
 
     const lit = (code: string | null) => {
       routes.forEach((r) => r.classList.toggle('on', !!code && r.dataset.code === code));
@@ -221,6 +287,7 @@ const infoJson = JSON.stringify({
       card.dataset.y = +at.t > 62 ? 'up' : 'mid';
       card.hidden = false;
       card.querySelector('.fm-x')!.addEventListener('click', () => select(null));
+      requestAnimationFrame(reveal);
     };
     stops.forEach((s) => {
       const code = s.dataset.code!;

@@ -4,7 +4,8 @@ import { checkCredentials, clearFailures, createSession, hashIp, isLockedOut, re
 
 export const prerender = false;
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+// Loose on purpose: local admin accounts may use a bare domain such as admin@altara.
+const EMAIL = /^[^\s@]+@[^\s@]+$/;
 let error = '';
 let email = '';
 
@@ -41,24 +42,54 @@ const field =
 ---
 
 <AdminBase title="Sign in">
-  <main class="flex min-h-screen items-center justify-center px-5 py-16">
-    <div class="w-full max-w-sm border border-line bg-white p-8 shadow-sm">
-      <p class="eyebrow mb-2">Altara</p>
-      <h1 class="font-display text-2xl font-medium tracking-wide text-ink">Admin sign in</h1>
+  <main class="grid min-h-screen lg:grid-cols-2">
+    <!-- Photo panel (left on desktop, a short banner on phones) -->
+    <aside class="relative flex min-h-[320px] items-end overflow-hidden bg-ink lg:min-h-screen">
+      <img
+        src="/assets/images/image/punakha dzong1.webp"
+        alt=""
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/30"></div>
+      <a
+        href="/"
+        class="absolute left-6 top-6 z-20 inline-flex items-center gap-2 border border-white/60 bg-black/20 px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white transition-colors hover:bg-white hover:text-ink lg:left-14 lg:top-10"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true"><path d="M20 12H4M10 6l-6 6 6 6" /></svg>
+        Back to website
+      </a>
+      <div class="relative z-10 px-6 pb-8 pt-24 lg:p-14">
+        <img src="/assets/images/logo/logo-white.svg" alt="Altara" class="mb-6 h-14 w-auto lg:h-20" />
+        <p class="font-display text-3xl uppercase leading-tight tracking-wide text-white lg:text-5xl">
+          Private journeys,<br /><span class="text-accent">made by hand</span>
+        </p>
+        <p class="mt-3 hidden max-w-sm text-sm leading-relaxed text-white/80 lg:block">
+          Manage tours, journal posts, the gallery and enquiries for Altara.
+        </p>
+      </div>
+    </aside>
 
-      {error && <p role="alert" class="mt-5 border border-red-700 bg-red-50 p-3 text-sm text-red-800">{error}</p>}
+    <!-- Sign-in form (right) -->
+    <section class="relative flex items-center justify-center overflow-hidden px-5 py-12 lg:px-16">
+      <div class="relative w-full max-w-sm border border-line bg-white/90 p-8 shadow-sm backdrop-blur-[2px] sm:p-10">
+        <p class="eyebrow mb-2">Altara</p>
+        <h1 class="font-display text-3xl font-medium tracking-wide text-ink">Admin sign in</h1>
+        <p class="mt-2 text-sm text-body">Welcome back. Sign in to manage the site.</p>
 
-      <form method="post" class="mt-6 space-y-5">
-        <div>
-          <label for="email" class="block text-[12px] font-bold uppercase tracking-[0.16em] text-ink">Email</label>
-          <input id="email" name="email" type="email" required maxlength="200" autocomplete="username" value={email} class={field} />
-        </div>
-        <div>
-          <label for="password" class="block text-[12px] font-bold uppercase tracking-[0.16em] text-ink">Password</label>
-          <input id="password" name="password" type="password" required maxlength="200" autocomplete="current-password" class={field} />
-        </div>
-        <button type="submit" class="btn btn-solid w-full">Sign in</button>
-      </form>
-    </div>
+        {error && <p role="alert" class="mt-5 border border-red-700 bg-red-50 p-3 text-sm text-red-800">{error}</p>}
+
+        <form method="post" class="mt-8 space-y-5">
+          <div>
+            <label for="email" class="block text-[12px] font-bold uppercase tracking-[0.16em] text-ink">Email</label>
+            <input id="email" name="email" type="email" required maxlength="200" autocomplete="username" value={email} class={field} />
+          </div>
+          <div>
+            <label for="password" class="block text-[12px] font-bold uppercase tracking-[0.16em] text-ink">Password</label>
+            <input id="password" name="password" type="password" required maxlength="200" autocomplete="current-password" class={field} />
+          </div>
+          <button type="submit" class="btn btn-solid w-full">Sign in</button>
+        </form>
+      </div>
+    </section>
   </main>
 </AdminBase>

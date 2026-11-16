@@ -3934,3 +3934,71 @@ h1 .gold,h2 .gold,h3 .gold{color:var(--color-accent-gold);}
 @keyframes aboutFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
 .about--float .about-media-accent{animation:aboutFloat 5s ease-in-out infinite;will-change:transform;}
 @media (prefers-reduced-motion:reduce){.about--float .about-media-accent{animation:none;}}
+
+/* ===================== TARIFF — VISA SECTION =====================
+   Light section like the rest of the page, two columns: heading, intro and document list on the left; three figures
+   across the top of the right column, then the two example photos side by side and a short note. */
+.visa-section{background:var(--color-offwhite);padding:110px 0;}
+.visa-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:72px;align-items:start;}
+.visa-eyebrow{display:block;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--color-accent-gold);margin-bottom:26px;}
+.visa-text h2{margin:0 0 24px;line-height:1.02;}
+.visa-text > p{max-width:520px;line-height:1.85;font-size:15px;margin-bottom:46px;}
+.visa-text > p a{color:var(--color-primary-dark);text-decoration:underline;text-underline-offset:4px;}
+.visa-text > p a:hover{color:var(--color-accent-gold-deep);}
+.visa-subhead{font-family:var(--font-body);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--color-primary-dark);margin:0 0 20px;}
+.visa-list{list-style:none;margin:0 0 38px;padding:0;display:grid;gap:14px;}
+.visa-list li{position:relative;padding-left:26px;font-size:15px;line-height:1.7;color:var(--color-body);}
+.visa-list li::before{content:"";position:absolute;left:3px;top:.7em;width:7px;height:7px;border-radius:50%;background:var(--color-accent-gold);}
+.visa-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin:0 0 36px;}
+.visa-facts > div{border-top:1px solid var(--color-rule);padding-top:20px;}
+.visa-facts dt{font-family:var(--font-display);font-size:clamp(38px,4.2vw,56px);line-height:1;color:var(--color-primary-dark);letter-spacing:.02em;text-transform:uppercase;}
+.visa-facts dd{margin:12px 0 0;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--color-gray-muted);line-height:1.7;}
+.visa-photos{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.visa-photos figure{margin:0;background:#fff;border:1px solid var(--color-rule);display:flex;flex-direction:column;}
+.visa-photos img{width:100%;height:auto;display:block;padding:16px 16px 0;flex:1;object-fit:contain;}
+.visa-photos figcaption{padding:14px 12px 18px;text-align:center;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--color-primary-dark);}
+.visa-note{margin:22px 0 0;font-size:14px;line-height:1.8;color:var(--color-body);}
+@media (max-width:960px){
+  .visa-section{padding:84px 0;}
+  .visa-grid{grid-template-columns:1fr;gap:56px;}
+}
+@media (max-width:560px){
+  .visa-facts{grid-template-columns:1fr;gap:20px;}
+  .visa-photos{grid-template-columns:1fr;}
+}
+/* ===================== /TARIFF — VISA SECTION ===================== */
+
+/* ===================== MOBILE FIXES ===================== */
+/* Grid columns may shrink below their content so long labels wrap instead of pushing the page wider. */
+@media (max-width:900px){
+  .bhutan-map-facts{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .bhutan-fact-card{min-width:0;}
+  .bhutan-fact-label{overflow-wrap:anywhere;}
+}
+@media (max-width:380px){
+  .bhutan-fact-card{padding:12px 12px;}
+  .bhutan-fact-number{font-size:26px;}
+  .bhutan-fact-label{font-size:10px;letter-spacing:.05em;}
+}
+/* Bigger tap area for the menu button (the three lines stay the same size). */
+.hamburger-btn::after{content:"";position:absolute;inset:-14px -12px;}
+/* Feature photos on phones: keep the second photo clear of the caption in the mirrored layout. */
+@media (max-width:900px){
+  .about--feature.about--reverse .about-media-accent{top:36%;}
+}
+/* All Tours filters on phones: Style and Length become compact wrapped buttons instead of tall lists. */
+@media (max-width:900px){
+  .tours-all .tour-filters-row{padding:4px 20px 2px;}
+  .tours-all .tour-filters-group{padding:16px 0;}
+  .tours-all .tour-chips,
+  .tours-all .tour-filters-group--seg .tour-chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .tours-all .tour-chip,
+  .tours-all .tour-filters-group--seg .tour-chip{width:auto;padding:9px 14px;border:1px solid var(--color-rule);background:#fff;}
+  .tours-all .tour-chip::before{display:none;}
+  .tours-all .tour-chip span{margin-left:6px;}
+  .tours-all .tour-chip.is-active,
+  .tours-all .tour-filters-group--seg .tour-chip.is-active{background:var(--color-primary-dark);border-color:var(--color-primary-dark);color:#fff;}
+  .tours-all .tour-chip.is-active span{color:#E7D3AE;}
+  .tours-all .tour-filters-bar{padding:20px 20px 0;}
+}
+/* ===================== /MOBILE FIXES ===================== */
