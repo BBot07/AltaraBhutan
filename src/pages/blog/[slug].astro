@@ -16,7 +16,7 @@ cachePublic(Astro);
 const others = (await getPublishedPosts(20)).filter((p) => p.id !== post.id).slice(0, 4);
 const url = new URL(`/blog/${post.slug}`, Astro.site).toString();
 const titleLines = post.title.split(': ');
-const description = post.seo_description || `${post.title} — notes from the Altara journal.`;
+const description = post.seo_description || `${post.title} — notes from the Altara Bhutan journal.`;
 
 const jsonLd = [
   {
@@ -26,13 +26,13 @@ const jsonLd = [
     datePublished: post.published_on,
     image: new URL(post.cover_image_url, Astro.site).toString(),
     author: post.author ? { '@type': 'Person', name: post.author } : undefined,
-    publisher: { '@type': 'Organization', name: 'Altara' },
+    publisher: { '@type': 'Organization', name: 'Altara Bhutan' },
     mainEntityOfPage: url,
   },
 ];
 ---
 
-<SiteLayout title={`${post.title} — Altara`} description={description} image={post.cover_image_url} jsonLd={jsonLd}>
+<SiteLayout title={`${post.title} — Altara Bhutan`} description={description} image={post.cover_image_url} jsonLd={jsonLd}>
   <section class="hero hero--page hero--center" style={`background-image:url('${post.cover_image_url}');background-position:${post.hero_position};`}>
     <div class="hero-content">
       <h1>

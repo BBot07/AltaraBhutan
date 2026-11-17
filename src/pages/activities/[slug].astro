@@ -1,0 +1,106 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import DarkCta from '../../components/DarkCta.astro';
+import { activities, activityBySlug } from '../../lib/activities';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return activities.map((a) => ({ params: { slug: a.slug } }));
+}
+
+const { slug } = Astro.params;
+const a = activityBySlug(slug!)!;
+const others = activities.filter((x) => x.slug !== a.slug);
+---
+
+<SiteLayout title={`${a.title} in Bhutan — Altara Bhutan`} description={a.metaDescription}>
+  <!-- ================= HERO ================= -->
+  <section class="hero hero--page hero--center"
+    style={`background-image:url('${a.image}');background-position:${a.heroPosition ?? 'center'};`}>
+    <div class="hero-content">
+      <h1>{a.title}</h1>
+    </div>
+    <div class="hero-mist" aria-hidden="true">
+      <div class="hero-mist-layer hero-mist-layer--1" style="background-image:url('/assets/images/cloud.webp');"></div>
+      <div class="hero-mist-layer hero-mist-layer--2" style="background-image:url('/assets/images/cloud.webp');"></div>
+    </div>
+  </section>
+
+  <!-- ================= INTRO ================= -->
+  <section class="info-lead reveal">
+    <div class="container">
+      <span class="eyebrow eyebrow--accent">{a.eyebrow}</span>
+      <h2>{a.headingPlain} <span class="gold">{a.headingGold}</span></h2>
+      <p>{a.intro}</p>
+    </div>
+  </section>
+
+  <!-- ================= FEATURE ================= -->
+  <section class="about about--feature reveal">
+    <div class="container">
+      <div class="about-media">
+        <div class="about-media-main">
+          <img src={a.image} alt={a.imageAlt} loading="lazy">
+          <p class="about-media-caption" set:html={a.caption} />
+        </div>
+        <div class="about-media-accent">
+          <img src={a.image2} alt={a.image2Alt} loading="lazy">
+        </div>
+      </div>
+      <div class="about-copy">
+        <span class="eyebrow eyebrow--accent">{a.featureEyebrow}</span>
+        <h2>{a.featureHeadingPlain} <span class="gold">{a.featureHeadingGold}</span></h2>
+        {a.paragraphs.map((p) => <p>{p}</p>)}
+        <a href="/enquire" class="btn btn-solid-gold">Plan This Experience</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT TO EXPECT ================= -->
+  <section class="values-section reveal">
+    <div class="container">
+      <div class="values-head">
+        <span class="eyebrow eyebrow--accent">What To Expect</span>
+        <h2>How We <span class="gold">Arrange It</span></h2>
+      </div>
+      <div class="value-grid">
+        {a.expect.map((e, i) => (
+          <div class="value-card">
+            <div class="value-number">{String(i + 1).padStart(2, '0')}</div>
+            <h3>{e.title}</h3>
+            <p>{e.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AT A GLANCE ================= -->
+  <section class="fact-section fact-section--tight reveal">
+    <div class="container">
+      <div class="season-grid">
+        {a.facts.map((f) => (
+          <div class="bhutan-fact-card">
+            <div class="bhutan-fact-number">{f.value}</div>
+            <div class="bhutan-fact-label">{f.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MORE ACTIVITIES ================= -->
+  <section class="activity-more reveal">
+    <div class="container">
+      <span class="eyebrow eyebrow--accent">Beyond The Itinerary</span>
+      <h2>More <span class="gold">Activities</span></h2>
+      <div class="activity-more-links">
+        {others.map((o) => <a href={`/activities/${o.slug}`} class="btn btn-outline-green">{o.title}</a>)}
+      </div>
+    </div>
+  </section>
+
+  <DarkCta image="/assets/images/image/Punakha Dzongkhag Header.webp"
+    text={`Tell us when you are travelling and how you would like to spend your days, and we will build ${a.title.toLowerCase()} into a private Bhutan journey — no templates, no packages.`} />
+</SiteLayout>

@@ -308,7 +308,7 @@ const legend = 'font-display text-2xl text-ink';
       <label class="block">
         <span class="field-label">Text</span>
         <textarea name="cost_text" rows="4" maxlength="3000" aria-invalid={errors.cost_text ? 'true' : undefined} class="field">{values.cost_text}</textarea>
-        <span class="field-hint">Altara quotes by enquiry, so there is no price field. Links: [Tariff page](/tariff). Leave empty to hide the section.</span>
+        <span class="field-hint">Altara Bhutan quotes by enquiry, so there is no price field. Links: [Tariff page](/tariff). Leave empty to hide the section.</span>
         {errors.cost_text && <span class="field-error">{errors.cost_text}</span>}
       </label>
     </div>
@@ -321,7 +321,7 @@ const legend = 'font-display text-2xl text-ink';
       <label class="block">
         <span class="field-label">SEO title</span>
         <input name="seo_title" type="text" maxlength="60" value={values.seo_title} data-count="60" aria-invalid={errors.seo_title ? 'true' : undefined} class="field" />
-        <span class="field-hint">Leave empty for "Tour title — Altara". <output data-counter class="font-bold">{values.seo_title.length} / 60</output></span>
+        <span class="field-hint">Leave empty for "Tour title — Altara Bhutan". <output data-counter class="font-bold">{values.seo_title.length} / 60</output></span>
         {errors.seo_title && <span class="field-error">{errors.seo_title}</span>}
       </label>
       <label class="block">

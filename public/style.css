@@ -379,6 +379,27 @@
     margin-top:28px;
     text-align:center;
   }
+  /* Social icons pinned to the bottom of the mobile menu. */
+  .mobile-nav-social{
+    margin-top:auto;
+    padding-top:32px;
+    display:flex;
+    justify-content:center;
+    gap:14px;
+  }
+  .mobile-nav .mobile-nav-social a{
+    width:42px;
+    height:42px;
+    padding:0;
+    border:1px solid rgba(255,255,255,0.35);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--color-white);
+  }
+  .mobile-nav-social svg{width:18px;height:18px;}
+  header.scrolled ~ .mobile-nav .mobile-nav-social a{border:1px solid var(--color-rule);}
   /* Mirrors the header's own scrolled state — when the fixed header flips
      from transparent-over-hero to a solid white background
      (header.scrolled, see the header scroll-state IIFE in script.js), the
@@ -1439,7 +1460,7 @@
          this is the desktop/pinned equivalent of that fix. Flex
          align-items:center still centers the content within the padded
          box, just shifted down from a taller top inset. */
-      padding:110px 0 60px;
+      padding:100px 0 36px;
       display:flex;
       align-items:center;
       overflow:hidden;
@@ -1456,16 +1477,26 @@
        both columns here — not in the base/mobile rules above, which
        aren't pinned or height-clamped and never had this problem — closes
        that gap without touching the natural-flow mobile layout. */
-    .bhutan-map-container{max-width:680px;}
+    .bhutan-map-container{max-width:900px;}
     /* Keep the whole map, including the road-gate labels under it, inside
        the pinned 100vh box on any screen height. */
-    .bhutan-map-container svg{max-height:calc(100vh - 290px);}
+    .bhutan-map-container svg{max-height:calc(100vh - 295px);}
+    .explore-bhutan-cta-row{margin-top:14px;}
     .bhutan-map-facts{gap:6px;}
     .bhutan-fact-card{padding:8px 12px;}
     .bhutan-fact-number{font-size:18px;margin-bottom:2px;}
     .bhutan-fact-label{font-size:8px;}
   }
 
+  .explore-bhutan-cta-row{display:flex;align-items:center;justify-content:center;gap:34px;flex-wrap:wrap;margin-top:28px;}
+  /* Map CTAs: a dark-green button with a gold arrow, plus an underlined text link beside it. */
+  .map-cta-link{
+    font-family:var(--font-body);font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--color-primary-dark);
+    text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:7px;text-decoration-color:var(--color-accent-gold);
+    transition:color .3s var(--ease),text-underline-offset .3s var(--ease);
+  }
+  .map-cta-link:hover{color:var(--color-accent-gold-deep);text-underline-offset:10px;}
   .bhutan-map-layout{
     display:flex;
     align-items:center;
@@ -2192,6 +2223,17 @@
     transition:color .3s var(--ease);
   }
   .footer-col a:hover{color:var(--color-accent-gold);}
+  /* Social icons under the Contact column. */
+  .footer-social{display:flex;gap:12px;margin-top:22px;}
+  .footer-col .footer-social a{
+    width:38px;height:38px;
+    border:1px solid rgba(255,255,255,0.35);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    transition:color .3s var(--ease),border-color .3s var(--ease);
+  }
+  .footer-col .footer-social a:hover{border-color:var(--color-accent-gold);}
+  .footer-social svg{width:16px;height:16px;}
   /* Just the copyright line now — the phone/email span was dropped since
      that same contact info already lives in the footer's own Contact
      column above; centered rather than space-between now that there's
@@ -3772,22 +3814,15 @@
    the page picks the trade tab server-side after a trade submission or with /enquire?type=trade. */
 .desk{background:var(--color-offwhite);padding:110px 0 40px;}
 .desk-grid{display:grid;grid-template-columns:1fr;box-shadow:0 30px 70px rgba(14,21,18,.12);}
-.desk-side{background:var(--color-black-green);color:rgba(255,255,255,.78);padding:56px 28px;}
+.desk-side{background:var(--color-black-green);color:rgba(255,255,255,.78);padding:56px 28px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
 .desk-side h2{color:#fff;margin:14px 0 20px;}
 .eyebrow--light{color:var(--color-accent-gold);}
-.desk-side-lede{font-size:14px;line-height:1.85;max-width:380px;}
-.desk-promises{margin:36px 0;display:grid;gap:22px;}
-.desk-promises li{border-left:2px solid var(--color-accent-gold);padding-left:18px;display:grid;gap:4px;}
-.desk-promises strong{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#fff;font-weight:700;}
-.desk-promises span{font-size:13px;line-height:1.7;}
-.desk-planner{display:flex;align-items:center;gap:16px;padding:20px 0;border-top:1px solid rgba(255,255,255,.14);border-bottom:1px solid rgba(255,255,255,.14);}
-.desk-planner .team-avatar{width:52px;max-width:52px;margin:0;flex:none;}
-.desk-planner .team-initials{font-size:18px;}
-.desk-planner .enquire-planner-name{color:#fff;}
-.desk-contact{margin-top:26px;display:grid;gap:16px;font-size:14px;}
-.desk-contact li{display:grid;gap:3px;}
+.desk-side-lede{font-size:14px;line-height:1.85;max-width:380px;margin:0 auto;}
+.desk-contact{margin-top:34px;padding-top:30px;border-top:1px solid rgba(255,255,255,.14);display:grid;gap:22px;font-size:14px;width:100%;max-width:320px;justify-items:center;}
+.desk-contact li{display:grid;gap:5px;justify-items:center;}
 .desk-contact-label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--color-accent-gold);}
-.desk-contact a{color:#fff;border-bottom:1px solid rgba(255,255,255,.3);justify-self:start;transition:border-color .25s;}
+.desk-contact a{color:#fff;border-bottom:1px solid rgba(255,255,255,.3);justify-self:center;transition:border-color .25s;}
 .desk-contact a:hover{border-color:var(--color-accent-gold);}
 
 .desk-card{background:#fff;padding:36px 22px 48px;}
@@ -4002,3 +4037,9 @@ h1 .gold,h2 .gold,h3 .gold{color:var(--color-accent-gold);}
   .tours-all .tour-filters-bar{padding:20px 20px 0;}
 }
 /* ===================== /MOBILE FIXES ===================== */
+
+/* ===================== ACTIVITY PAGES — MORE ACTIVITIES ===================== */
+.activity-more{padding:70px 0 90px;text-align:center;}
+.activity-more h2{margin:14px 0 30px;}
+.activity-more-links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;}
+/* ===================== /ACTIVITY PAGES ===================== */

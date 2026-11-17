@@ -30,13 +30,38 @@ const jsonLd = [
 ];
 ---
 
-<SiteLayout title={`${c.label} — Altara`} description={c.description} image={c.hero_image} jsonLd={jsonLd}>
+<SiteLayout title={`${c.label} — Altara Bhutan`} description={c.description} image={c.hero_image} jsonLd={jsonLd}>
   <section class={heroClass} style={`background-image:url('${c.hero_image}');background-position:${c.hero_position};`}>
     <div class="hero-content">
       <h1>{c.label}</h1>
     </div>
     <HeroMist />
   </section>
+
+  {
+    c.slug === 'luxury' && (
+      <section class="about about--feature reveal">
+        <div class="container">
+          <div class="about-media">
+            <div class="about-media-main">
+              <img src="/assets/images/hotels/amankora-paro.webp" alt="A suite with a wood-panelled bedroom and stone-walled bath at a luxury lodge in Paro, Bhutan" loading="lazy" />
+              <p class="about-media-caption">Stays Worth<br>The Journey</p>
+            </div>
+            <div class="about-media-accent">
+              <img src="/assets/images/hotels/como-uma-paro.webp" alt="The entrance of a luxury hotel in Paro, Bhutan, in traditional Bhutanese architecture" loading="lazy" />
+            </div>
+          </div>
+          <div class="about-copy">
+            <span class="eyebrow eyebrow--accent">Private Luxury</span>
+            <h2>Where Stillness Meets <span class="gold">Comfort</span></h2>
+            <p>Bhutan has some of the most remarkable small lodges in the world — a handful of rooms, built in stone and timber, set in valleys where the only sound is the wind in the pines. Our luxury journeys are built around them.</p>
+            <p>Each itinerary is private and unhurried: your own guide and driver, a pace that follows you, and nights spent in places chosen for their quiet, their views and their care.</p>
+            <a href="/enquire" class="btn btn-solid-gold">Plan Your Stay</a>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   <section class="tour-section reveal">
     <div class="container">

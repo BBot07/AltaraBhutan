@@ -1,3 +1,6 @@
+---
+import SocialLinks from './SocialLinks.astro';
+---
 <header id="siteHeader">
     <div class="container inner">
       <nav class="primary-nav nav-left">
@@ -40,7 +43,7 @@
         <a href="/blog">Blog</a>
       </nav>
       <a href="/" class="logo-link">
-        <img id="siteLogo" src="/assets/images/logo/logo-white.svg" alt="Altara">
+        <img id="siteLogo" src="/assets/images/logo/logo-white.svg" alt="Altara Bhutan">
       </a>
       <div class="header-right">
         <nav class="primary-nav nav-right">
@@ -73,6 +76,12 @@
   <!-- ================= MOBILE NAV ================= -->
   <div class="mobile-nav" id="mobileNav">
     <nav>
+      <a href="/">Home</a>
+      <button type="button" class="mobile-nav-toggle" aria-expanded="false">About<span class="nav-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg></span></button>
+      <div class="mobile-nav-sub">
+        <a href="/about">About Us</a>
+        <a href="/gallery">Gallery</a>
+      </div>
       <button type="button" class="mobile-nav-toggle" aria-expanded="false">Experiences<span class="nav-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg></span></button>
       <div class="mobile-nav-sub">
         <a href="/tours">All Tours</a>
@@ -90,12 +99,9 @@
         <a href="/faq">FAQ</a>
       </div>
       <a href="/blog">Blog</a>
-      <a href="/">Home</a>
-      <button type="button" class="mobile-nav-toggle" aria-expanded="false">About<span class="nav-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6" /></svg></span></button>
-      <div class="mobile-nav-sub">
-        <a href="/about">About Us</a>
-        <a href="/gallery">Gallery</a>
-      </div>
       <a href="/enquire" class="btn btn-solid-gold">Enquire Now</a>
     </nav>
+    <div class="mobile-nav-social" aria-label="Follow Altara Bhutan">
+      <SocialLinks />
+    </div>
   </div>

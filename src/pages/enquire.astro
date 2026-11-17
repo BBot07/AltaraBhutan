@@ -11,7 +11,7 @@ export const prerender = false;
 const tradeFirst = !!Astro.getActionResult(actions.submitPartnerInquiry) || Astro.url.searchParams.get('type') === 'trade';
 ---
 
-<SiteLayout title="Enquire Now — Altara" description="Start planning your private Bhutan journey, or send a partnership proposal as a travel agent, hotel or local specialist. Every message is read personally.">
+<SiteLayout title="Enquire Now — Altara Bhutan" description="Start planning your private Bhutan journey, or send a partnership proposal as a travel agent, hotel or local specialist. Every message is read personally.">
 <!-- ================= HERO ================= -->
   <section class="hero hero--page hero--center"
     style="background-image:url('/assets/images/image/Wangdue.webp');background-position:center 40%;">
@@ -32,21 +32,7 @@ const tradeFirst = !!Astro.getActionResult(actions.submitPartnerInquiry) || Astr
         <aside class="desk-side">
           <span class="eyebrow eyebrow--light">Private Journeys, By Hand</span>
           <h2>Begin Your<br><span class="gold">Bhutan Story</span></h2>
-          <p class="desk-side-lede">Every message is read by a person in Thimphu — never a bot, never a sales queue.</p>
-
-          <ul class="desk-promises">
-            <li><strong>Within one business day</strong><span>Our reply time for every traveler enquiry.</span></li>
-            <li><strong>No obligation</strong><span>A first proposal costs nothing and commits you to nothing.</span></li>
-            <li><strong>Designed locally</strong><span>Planned and run by our own team, start to finish.</span></li>
-          </ul>
-
-          <div class="desk-planner">
-            <div class="team-avatar"><span class="team-initials">NW</span></div>
-            <div>
-              <div class="enquire-planner-name">Namgyel Wangchuk</div>
-              <span class="enquire-planner-role">Usually The First Voice You'll Hear</span>
-            </div>
-          </div>
+          <p class="desk-side-lede">Every message is read by a person in Thimphu, and answered within one business day.</p>
 
           <ul class="desk-contact">
             <li>
@@ -55,11 +41,7 @@ const tradeFirst = !!Astro.getActionResult(actions.submitPartnerInquiry) || Astr
             </li>
             <li>
               <span class="desk-contact-label">Email</span>
-              <a href="mailto:hello@altara.travel">hello@altara.travel</a>
-            </li>
-            <li>
-              <span class="desk-contact-label">Office</span>
-              <span>Thimphu, Bhutan &middot; Mon–Fri, 9am–5pm BTT</span>
+              <a href="mailto:hello@altarabhutan.com">hello@altarabhutan.com</a>
             </li>
           </ul>
         </aside>
@@ -81,7 +63,7 @@ const tradeFirst = !!Astro.getActionResult(actions.submitPartnerInquiry) || Astr
 
           <div class="desk-panel desk-panel--trade">
             <p class="enquire-form-lede">Travel agent, tour operator, hotel or local specialist? Send us a proposal — our
-              partnerships team replies within three business days. <a href="/partners">About partnering with Altara</a>.</p>
+              partnerships team replies within three business days. <a href="/partners">About partnering with Altara Bhutan</a>.</p>
             <PartnerForm />
           </div>
         </div>
@@ -98,10 +80,10 @@ const tradeFirst = !!Astro.getActionResult(actions.submitPartnerInquiry) || Astr
         <h2>Based In <span class="gold">Thimphu</span></h2>
       </div>
       <div class="enquire-map">
-        <iframe src="https://www.google.com/maps?q=Thimphu,Bhutan&output=embed" title="Altara office — Thimphu, Bhutan"
+        <iframe src="https://www.google.com/maps?q=Thimphu,Bhutan&output=embed" title="Altara Bhutan office — Thimphu, Bhutan"
           loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
-      <p class="enquire-map-caption">Altara is based in Thimphu, Bhutan — every itinerary is designed and run
+      <p class="enquire-map-caption">Altara Bhutan is based in Thimphu, Bhutan — every itinerary is designed and run
         locally, start to finish.</p>
     </div>
   </section>

@@ -22,8 +22,8 @@ const cat = (await getCategoryBySlug(tour.category)) ?? { label: 'Tours', slug: 
 const catPath = categoryPath(cat.slug);
 const related = await getRelatedTours(tour.category, tour.id);
 const noun = cat.enquire_noun; // "Tour" or "Trek"
-const pageTitle = tour.seo_title || `${tour.title} — Altara`;
-const description = tour.seo_description || tour.summary || `${tour.title}: a private ${durationLabel(tour.duration_days)} journey through Bhutan with Altara.`;
+const pageTitle = tour.seo_title || `${tour.title} — Altara Bhutan`;
+const description = tour.seo_description || tour.summary || `${tour.title}: a private ${durationLabel(tour.duration_days)} journey through Bhutan with Altara Bhutan.`;
 const site = Astro.site!;
 
 const jsonLd = [
@@ -34,7 +34,7 @@ const jsonLd = [
     description,
     image: new URL(tour.cover_image_url, site).toString(),
     touristType: cat.label,
-    provider: { '@type': 'TravelAgency', name: 'Altara', url: site.toString() },
+    provider: { '@type': 'TravelAgency', name: 'Altara Bhutan', url: site.toString() },
     itinerary: tour.itinerary.map((d) => ({ '@type': 'ListItem', position: d.day_number, name: d.title })),
   },
   {
@@ -358,12 +358,12 @@ const sectionNav = [
         <EnquiryForm tour={{ slug: tour.slug, title: tour.title }} idPrefix="tour" anchor="enquiry-form" submitLabel="Submit Enquiry" />
         <div class="tour-enquire-quick">
           <a href="https://wa.me/9752333456" class="btn btn-outline-green" target="_blank" rel="noopener">WhatsApp Us</a>
-          <a href="mailto:hello@altara.travel" class="tour-enquire-email">
+          <a href="mailto:hello@altarabhutan.com" class="tour-enquire-email">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="5" width="18" height="14" rx="2"></rect>
               <path d="M3 7l9 6 9-6"></path>
             </svg>
-            hello@altara.travel
+            hello@altarabhutan.com
           </a>
         </div>
       </div>
@@ -388,7 +388,7 @@ const sectionNav = [
       <p class="tour-aside-note">Every journey is private and priced to your dates and style — send an enquiry and we reply with a tailored quote.</p>
       <a href="#enquire" class="btn btn-solid-gold tour-aside-cta">Book This {noun}</a>
       <div class="tour-aside-contact">
-        <a href="mailto:hello@altara.travel">hello@altara.travel</a>
+        <a href="mailto:hello@altarabhutan.com">hello@altarabhutan.com</a>
       </div>
     </div>
   </aside>
