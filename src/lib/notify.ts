@@ -25,11 +25,11 @@ export interface Notification {
   fields: [string, string | number | null | undefined][];
 }
 
-export async function notifyEnquiry(note: Notification): Promise<void> {
+export async function notifyEnquiry(note: Notification): Promise<{ sent: boolean; reason?: string }> {
   const mail = env as unknown as MailEnv;
   if (!mail.RESEND_API_KEY) {
     console.warn(`[notify] RESEND_API_KEY is not set, so no email was sent for: ${note.subject} (the enquiry is saved in the admin inbox).`);
-    return;
+    return { sent: false, reason: 'no-api-key' };
   }
   const rows = note.fields.filter(([, v]) => v !== null && v !== undefined && String(v).trim() !== '');
   const text = rows.map(([k, v]) => `${k}: ${v}`).join('\n');
@@ -51,8 +51,16 @@ export async function notifyEnquiry(note: Notification): Promise<void> {
       }),
       signal: AbortSignal.timeout(8000),
     });
-    if (!res.ok) console.error('[notify] Resend refused the email:', res.status, (await res.text()).slice(0, 300));
+    if (!res.ok) {
+      // Typical causes: 403 "domain is not verified" (the from-address must be on a verified Resend domain, or be
+      // onboarding@resend.dev, which only delivers to the Resend account's own email), 401 bad API key, 422 bad address.
+      const detail = (await res.text()).slice(0, 400);
+      console.error(`[notify] Resend refused the email (HTTP ${res.status}) from=${mail.ENQUIRY_FROM_EMAIL || DEFAULT_FROM}: ${detail}`);
+      return { sent: false, reason: `resend-${res.status}` };
+    }
+    return { sent: true };
   } catch (error) {
     console.error('[notify] email failed:', error);
+    return { sent: false, reason: 'network' };
   }
 }

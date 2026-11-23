@@ -37,7 +37,26 @@ function renderWidgets() {
       slots.forEach((slot) => {
         if (slot.dataset.rendered) return;
         slot.dataset.rendered = '1';
-        slot.dataset.widget = turnstile()!.render(slot, { sitekey: slot.dataset.sitekey, theme: 'light' });
+        const form = slot.closest('form');
+        const note = form?.querySelector<HTMLElement>('[data-form-message]');
+        slot.dataset.widget = turnstile()!.render(slot, {
+          sitekey: slot.dataset.sitekey,
+          theme: 'light',
+          // The token is also kept here, so the submit handler never depends only on the hidden input being present.
+          callback: (token: string) => {
+            slot.dataset.token = token;
+            if (note && note.dataset.kind === 'security') note.hidden = true;
+          },
+          'expired-callback': () => delete slot.dataset.token,
+          'timeout-callback': () => delete slot.dataset.token,
+          'error-callback': () => {
+            delete slot.dataset.token;
+            if (note) {
+              note.dataset.kind = 'security';
+              showMessage(note, 'The security check could not run in your browser. Please reload the page, or email us at hello@altarabhutan.com.');
+            }
+          },
+        });
       });
     })
     .catch(() => {
@@ -95,11 +114,18 @@ async function submit(form: HTMLFormElement) {
   const box = form.querySelector<HTMLElement>('[data-form-message]');
   clearErrors(form);
 
+  const slot = form.querySelector<HTMLElement>('.cf-turnstile');
   const data = new FormData(form);
-  if (!data.get('cf-turnstile-response')) {
-    if (box) showMessage(box, 'Please complete the security check above the button.');
+  const token = String(data.get('cf-turnstile-response') || slot?.dataset.token || '');
+  if (!token) {
+    if (box) {
+      box.dataset.kind = 'security';
+      showMessage(box, 'Please complete the security check above the button, then send again.');
+    }
     return;
   }
+  data.set('cf-turnstile-response', token);
+  if (box) box.dataset.kind = 'server';
 
   if (button) {
     button.disabled = true;
@@ -109,18 +135,27 @@ async function submit(form: HTMLFormElement) {
   const widget = form.querySelector<HTMLElement>('.cf-turnstile')?.dataset.widget;
   try {
     const res = await fetch(form.dataset.endpoint || '/api/enquire', { method: 'POST', body: data, headers: { Accept: 'application/json' } });
-    const out = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string; errors?: Record<string, string> };
+    const out = (await res.json().catch(() => null)) as { ok?: boolean; message?: string; errors?: Record<string, string> } | null;
+    if (!out) {
+      // Not JSON (a Cloudflare error page, a timeout): say what actually happened instead of guessing.
+      if (box) showMessage(box, `The server did not answer properly (error ${res.status}). Please try again in a moment, or email us at hello@altarabhutan.com.`);
+      throw new Error('bad-response');
+    }
     if (res.ok && out.ok) {
       showThanks(form);
       return;
     }
     if (out.errors) showFieldErrors(form, out.errors);
-    if (box && (out.message || !out.errors)) showMessage(box, out.message || 'Sorry, something went wrong. Please try again in a moment.');
-  } catch {
-    if (box) showMessage(box, 'We could not reach the server. Please check your connection and try again.');
+    if (box && (out.message || !out.errors)) showMessage(box, out.message || `Sorry, something went wrong (error ${res.status}). Please try again in a moment.`);
+  } catch (error) {
+    if (box && box.hidden) showMessage(box, 'We could not reach the server. Please check your connection and try again.');
+    console.warn('[enquiry-form] submit failed:', error);
   }
   // A Turnstile token works once, so a retry needs a fresh one.
-  if (widget) turnstile()?.reset(widget);
+  if (widget) {
+    delete slot?.dataset.token;
+    turnstile()?.reset(widget);
+  }
   if (button) {
     button.disabled = false;
     button.textContent = label;

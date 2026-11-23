@@ -6,7 +6,7 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { z } from 'astro/zod';
-import { createEnquiry, getTourBySlug } from '../../lib/db';
+import { createEnquiry, getTourBySlug, db } from '../../lib/db';
 import { formatDate } from '../../lib/text';
 import { PARTNER_TYPES, PURPOSES, enquirySchema, partnerSchema } from '../../lib/enquiry-schemas';
 import { verifyTurnstile } from '../../lib/turnstile';
@@ -53,13 +53,14 @@ export const POST: APIRoute = async ({ request }) => {
   const secret = (env as unknown as { TURNSTILE_SECRET_KEY?: string }).TURNSTILE_SECRET_KEY;
   const human = await verifyTurnstile(secret, fields['cf-turnstile-response'] ?? '', ip);
   if (!human.ok) {
-    const message =
-      human.reason === 'missing'
-        ? 'Please complete the security check above the button.'
-        : human.reason === 'rejected'
-          ? 'The security check could not be verified. Please try again.'
-          : 'The security check is unavailable right now. Please try again in a moment, or email us directly.';
-    return json({ ok: false, code: 'turnstile', message }, 400);
+    const failures = {
+      missing: [400, 'Please complete the security check above the button.'],
+      rejected: [400, 'The security check expired or could not be verified. Please tick it again and resend.'],
+      not_configured: [503, 'Our enquiry form is temporarily unavailable. Please email hello@altarabhutan.com or message us on WhatsApp and we will reply the same day.'],
+      unreachable: [503, 'We could not reach the security service just now. Please try again in a moment.'],
+    } as const;
+    const [status, message] = failures[human.reason];
+    return json({ ok: false, code: `turnstile_${human.reason}`, message, codes: human.codes }, status);
   }
 
   const kind = fields.form_type === 'partner' ? 'partner' : 'enquiry';
@@ -88,7 +89,7 @@ export const POST: APIRoute = async ({ request }) => {
         travellers: null,
         message: `${header}\n\n${input.message}`,
       });
-      await notifyEnquiry({
+      const mailed = await notifyEnquiry({
         subject: oneLine(`New trade partnership proposal - ${input.company} - ${input.name}`),
         replyTo: input.email,
         fields: [
@@ -103,7 +104,7 @@ export const POST: APIRoute = async ({ request }) => {
           ['Message', input.message],
         ],
       });
-      return json({ ok: true });
+      return json({ ok: true, emailed: mailed.sent });
     }
 
     const parsed = enquirySchema.safeParse(fields);
@@ -136,7 +137,7 @@ export const POST: APIRoute = async ({ request }) => {
       travellers: input.travellers ?? null,
       message,
     });
-    await notifyEnquiry({
+    const mailed = await notifyEnquiry({
       subject: oneLine(`New ${tourTitle ? 'tour enquiry' : 'enquiry'} - ${tourTitle || purpose || 'General'} - ${input.name}`),
       replyTo: input.email,
       fields: [
@@ -151,9 +152,23 @@ export const POST: APIRoute = async ({ request }) => {
         ['Message', message],
       ],
     });
-    return json({ ok: true });
+    return json({ ok: true, emailed: mailed.sent });
   } catch (error) {
     console.error('[enquire] could not save the enquiry:', error);
     return json({ ok: false, message: 'Sorry, something went wrong on our side. Please try again in a moment, or reach us on WhatsApp or email.' }, 500);
   }
+};
+
+// GET /api/enquire: setup check. Reports only whether each piece is configured (never a value), so a visitor-facing
+// "temporarily unavailable" can be diagnosed from a browser without reading logs.
+export const GET: APIRoute = async () => {
+  const e = env as unknown as { TURNSTILE_SECRET_KEY?: string; RESEND_API_KEY?: string; DB?: unknown };
+  let database = false;
+  try {
+    await db().prepare('SELECT 1 FROM enquiries LIMIT 1').first();
+    database = true;
+  } catch {
+    database = false;
+  }
+  return json({ turnstileSecret: !!e.TURNSTILE_SECRET_KEY, resendKey: !!e.RESEND_API_KEY, database });
 };
