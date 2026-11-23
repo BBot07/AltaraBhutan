@@ -16,11 +16,8 @@ const SKIP = /^\/(admin|_actions|media|api|cdn-cgi)(\/|$)/;
 
 const PREVIEW_NOTICE = `
 <style>
-  .preview-bar{position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#16302A;color:#fff;font:400 12px/1.4 'Josefin Sans',Arial,sans-serif;letter-spacing:.08em;text-align:center;padding:9px 14px}
-  .preview-bar b{color:#D9B56E;font-weight:400;letter-spacing:.16em;text-transform:uppercase;margin-right:8px}
   .preview-toast{position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:99999;background:#fff;color:#16302A;border:1px solid #B08D57;padding:14px 22px;font:400 14px/1.4 'Josefin Sans',Arial,sans-serif;box-shadow:0 18px 40px rgba(0,0,0,.2)}
 </style>
-<div class="preview-bar"><b>Design preview</b>Front end only &mdash; forms and the admin are switched off in this version.</div>
 <script>
   document.addEventListener('submit', function (e) {
     e.preventDefault();
