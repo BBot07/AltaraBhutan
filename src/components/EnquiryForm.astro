@@ -1,11 +1,10 @@
 ---
-// Enquiry form in Altara's own form markup. It posts to the submitEnquiry Astro Action, which validates on the
-// server and saves to D1. Works without JavaScript: the page re-renders with the result.
-// The script at the bottom upgrades the arrival / departure date inputs to a calendar popover (native date inputs
-// without JavaScript).
-// Pages using it must be rendered on demand.
-import { actions, isInputError } from 'astro:actions';
-import { PURPOSES } from '../actions';
+// Enquiry form in Altara's own form markup. It posts to POST /api/enquire (src/pages/api/enquire.ts), which checks the
+// Cloudflare Turnstile token, validates every field on the server, saves to D1 and emails the owner. The browser side
+// (src/scripts/enquiry-forms.ts) sends the form without leaving the page.
+// The script at the bottom upgrades the arrival / departure date inputs to a calendar popover.
+import TurnstileWidget from './TurnstileWidget.astro';
+import { PURPOSES } from '../lib/enquiry-schemas';
 
 interface Props {
   /** Set on a tour page: the tour is linked to the enquiry and shown read-only. */
@@ -16,36 +15,11 @@ interface Props {
 }
 
 const { tour, idPrefix = 'enquire', anchor = 'enquiry-form', submitLabel = 'Send Enquiry' } = Astro.props;
-const result = Astro.getActionResult(actions.submitEnquiry);
-const sent = !!result && !result.error;
-const fieldErrors: Record<string, string[] | undefined> = result?.error && isInputError(result.error) ? result.error.fields : {};
-const failed = !!result?.error && !isInputError(result.error);
-
-// Keep what the visitor typed when there are errors.
-const values: Record<string, string> = {};
-if (result?.error && Astro.request.method === 'POST') {
-  try {
-    for (const [key, value] of await Astro.request.clone().formData()) if (typeof value === 'string') values[key] = value;
-  } catch {
-    // Body not readable: show an empty form.
-  }
-}
 const id = (name: string) => `${idPrefix}-${name}`;
-const err = (name: string) => fieldErrors[name]?.[0];
 ---
 
-{
-  sent ? (
-    <div class="form-notice" role="status" id={anchor}>
-      <strong>Thank you — your enquiry has been received.</strong> One of our travel designers will reply within one business day.
-    </div>
-  ) : (
-    <form class={`enquire-form${tour ? '' : ' enquire-form--box'}`} method="post" action={`${actions.submitEnquiry}#${anchor}`} id={anchor}>
-      {failed && (
-        <div class="form-notice form-notice--error" role="alert">
-          Sorry, something went wrong on our side. Please try again in a moment, or reach us on WhatsApp or email.
-        </div>
-      )}
+<form class={`enquire-form${tour ? '' : ' enquire-form--box'}`} method="post" action="/api/enquire" id={anchor} data-enquiry-form data-endpoint="/api/enquire" data-success-title="Thank you — your enquiry has been received." data-success-text="One of our travel designers will reply within one business day.">
+      <input type="hidden" name="form_type" value="enquiry" />
 
       <div class="hp-field" aria-hidden="true">
         <label>Leave this field empty <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
@@ -63,28 +37,25 @@ const err = (name: string) => fieldErrors[name]?.[0];
           <div class="form-row">
             <div class="form-field">
               <label for={id('name')}>Full Name <span class="req" aria-hidden="true">*</span></label>
-              <input type="text" id={id('name')} name="name" placeholder="e.g. Sarah Johnson" autocomplete="name" required minlength="2" maxlength="100" value={values.name} aria-invalid={err('name') ? 'true' : undefined} />
+              <input type="text" id={id('name')} name="name" placeholder="e.g. Sarah Johnson" autocomplete="name" required minlength="2" maxlength="100" />
               <span class="field-underline" />
-              {err('name') && <span class="field-error-text">{err('name')}</span>}
             </div>
             <div class="form-field">
               <label for={id('email')}>Email Address <span class="req" aria-hidden="true">*</span></label>
-              <input type="email" id={id('email')} name="email" placeholder="e.g. sarah@example.com" autocomplete="email" required maxlength="200" value={values.email} aria-invalid={err('email') ? 'true' : undefined} />
+              <input type="email" id={id('email')} name="email" placeholder="e.g. sarah@example.com" autocomplete="email" required maxlength="200" />
               <span class="field-underline" />
-              {err('email') && <span class="field-error-text">{err('email')}</span>}
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-field">
               <label for={id('phone')}>Phone / WhatsApp <span class="req" aria-hidden="true">*</span></label>
-              <input type="tel" id={id('phone')} name="phone" required placeholder="e.g. +1 555 123 4567" autocomplete="tel" maxlength="30" value={values.phone} aria-invalid={err('phone') ? 'true' : undefined} />
+              <input type="tel" id={id('phone')} name="phone" required placeholder="e.g. +1 555 123 4567" autocomplete="tel" maxlength="30" />
               <span class="field-underline" />
-              {err('phone') && <span class="field-error-text">{err('phone')}</span>}
             </div>
             <div class="form-field">
               <label for={id('country')}>Nationality <span class="req" aria-hidden="true">*</span></label>
-              <input type="text" id={id('country')} name="country" required placeholder="e.g. Australian" autocomplete="country-name" maxlength="80" value={values.country} />
+              <input type="text" id={id('country')} name="country" required placeholder="e.g. Australian" autocomplete="country-name" maxlength="80" />
               <span class="field-underline" />
             </div>
           </div>
@@ -92,24 +63,21 @@ const err = (name: string) => fieldErrors[name]?.[0];
           <div class="form-row">
             <div class="form-field" data-date-field>
               <label for={id('arrival')}>Arrival Date <span class="req" aria-hidden="true">*</span></label>
-              <input type="date" id={id('arrival')} name="arrival_date" required data-required value={values.arrival_date} aria-invalid={err('arrival_date') ? 'true' : undefined} />
+              <input type="date" id={id('arrival')} name="arrival_date" required data-required />
               <span class="field-underline" />
-              {err('arrival_date') && <span class="field-error-text">{err('arrival_date')}</span>}
             </div>
             <div class="form-field" data-date-field>
               <label for={id('departure')}>Departure Date <span class="req" aria-hidden="true">*</span></label>
-              <input type="date" id={id('departure')} name="departure_date" required data-required value={values.departure_date} aria-invalid={err('departure_date') ? 'true' : undefined} />
+              <input type="date" id={id('departure')} name="departure_date" required data-required />
               <span class="field-underline" />
-              {err('departure_date') && <span class="field-error-text">{err('departure_date')}</span>}
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-field">
               <label for={id('travellers')}>Number Of Travelers <span class="req" aria-hidden="true">*</span></label>
-              <input type="number" id={id('travellers')} name="travellers" required min="1" max="50" placeholder="e.g. 2" value={values.travellers} aria-invalid={err('travellers') ? 'true' : undefined} />
+              <input type="number" id={id('travellers')} name="travellers" required min="1" max="50" placeholder="e.g. 2" />
               <span class="field-underline" />
-              {err('travellers') && <span class="field-error-text">{err('travellers')}</span>}
             </div>
           </div>
 
@@ -121,10 +89,10 @@ const err = (name: string) => fieldErrors[name]?.[0];
               maxlength="2000"
               required
               placeholder="e.g. We are a family of four, keen on gentle walks, local festivals and a few nights at a heritage lodge."
-              aria-invalid={err('message') ? 'true' : undefined}>{values.message}</textarea>
+             ></textarea>
             <span class="field-underline" />
-            {err('message') && <span class="field-error-text">{err('message')}</span>}
           </div>
+          <TurnstileWidget />
           <button type="submit" class="btn btn-solid-gold">{submitLabel}</button>
         </>
       ) : (
@@ -132,7 +100,7 @@ const err = (name: string) => fieldErrors[name]?.[0];
           <div class="form-field">
             <label for={id('purpose')}>What Can We Help With?</label>
             <select id={id('purpose')} name="purpose">
-              {PURPOSES.map((p) => <option value={p} selected={values.purpose === p}>{p}</option>)}
+              {PURPOSES.map((p) => <option value={p}>{p}</option>)}
             </select>
             <span class="field-underline" />
           </div>
@@ -140,42 +108,38 @@ const err = (name: string) => fieldErrors[name]?.[0];
           <div class="form-row">
             <div class="form-field">
               <label for={id('name')}>Full Name <span class="req" aria-hidden="true">*</span></label>
-              <input type="text" id={id('name')} name="name" placeholder="e.g. Sarah Johnson" autocomplete="name" required minlength="2" maxlength="100" value={values.name} aria-invalid={err('name') ? 'true' : undefined} />
+              <input type="text" id={id('name')} name="name" placeholder="e.g. Sarah Johnson" autocomplete="name" required minlength="2" maxlength="100" />
               <span class="field-underline" />
-              {err('name') && <span class="field-error-text">{err('name')}</span>}
             </div>
             <div class="form-field">
               <label for={id('email')}>Email <span class="req" aria-hidden="true">*</span></label>
-              <input type="email" id={id('email')} name="email" placeholder="e.g. sarah@example.com" autocomplete="email" required maxlength="200" value={values.email} aria-invalid={err('email') ? 'true' : undefined} />
+              <input type="email" id={id('email')} name="email" placeholder="e.g. sarah@example.com" autocomplete="email" required maxlength="200" />
               <span class="field-underline" />
-              {err('email') && <span class="field-error-text">{err('email')}</span>}
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-field">
               <label for={id('phone')}>Phone / WhatsApp <span class="req" aria-hidden="true">*</span></label>
-              <input type="tel" id={id('phone')} name="phone" required placeholder="e.g. +1 555 123 4567" autocomplete="tel" maxlength="30" value={values.phone} aria-invalid={err('phone') ? 'true' : undefined} />
+              <input type="tel" id={id('phone')} name="phone" required placeholder="e.g. +1 555 123 4567" autocomplete="tel" maxlength="30" />
               <span class="field-underline" />
-              {err('phone') && <span class="field-error-text">{err('phone')}</span>}
             </div>
             <div class="form-field">
               <label for={id('country')}>Home Country <span class="req" aria-hidden="true">*</span></label>
-              <input type="text" id={id('country')} name="country" required placeholder="e.g. Australia" autocomplete="country-name" maxlength="80" value={values.country} />
+              <input type="text" id={id('country')} name="country" required placeholder="e.g. Australia" autocomplete="country-name" maxlength="80" />
               <span class="field-underline" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-field">
               <label for={id('dates')}>Preferred Travel Dates <span class="req" aria-hidden="true">*</span></label>
-              <input type="text" id={id('dates')} name="preferred_dates" placeholder="e.g. April 2027" required maxlength="100" value={values.preferred_dates} />
+              <input type="text" id={id('dates')} name="preferred_dates" placeholder="e.g. April 2027" required maxlength="100" />
               <span class="field-underline" />
             </div>
             <div class="form-field">
               <label for={id('travellers')}>Number Of Travelers <span class="req" aria-hidden="true">*</span></label>
-              <input type="number" id={id('travellers')} name="travellers" required min="1" max="50" placeholder="e.g. 2" value={values.travellers} aria-invalid={err('travellers') ? 'true' : undefined} />
+              <input type="number" id={id('travellers')} name="travellers" required min="1" max="50" placeholder="e.g. 2" />
               <span class="field-underline" />
-              {err('travellers') && <span class="field-error-text">{err('travellers')}</span>}
             </div>
           </div>
 
@@ -187,16 +151,18 @@ const err = (name: string) => fieldErrors[name]?.[0];
               maxlength="2000"
               required
               placeholder="e.g. A slow, unhurried trip for two in spring, with time in monasteries and the high valleys."
-              aria-invalid={err('message') ? 'true' : undefined}>{values.message}</textarea>
+             ></textarea>
             <span class="field-underline" />
-            {err('message') && <span class="field-error-text">{err('message')}</span>}
           </div>
+          <TurnstileWidget />
           <button type="submit" class="btn btn-solid-gold">{submitLabel}</button>
         </>
       )}
-    </form>
-  )
-}
+</form>
+
+<script>
+  import '../scripts/enquiry-forms';
+</script>
 
 <script>
   // Calendar popover for the arrival / departure inputs. The native inputs stay in the form (hidden),

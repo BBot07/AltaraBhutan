@@ -22,7 +22,7 @@ commented blocks of `public/style.css`; the original pages are otherwise unchang
 - `src/pages/` — static pages (`index`, `about`, `about-bhutan`, `why-bhutan`, `tariff`, `faq`, `festival-tours`) and
   database-driven ones (below).
 - `src/lib/db.ts` — the whole data layer (prepared statements only). `auth.ts` / `auth-crypto.ts` — admin sessions.
-- `src/actions/index.ts` — `submitEnquiry` (server-side validation → `enquiries` table).
+- `src/pages/api/enquire.ts` — `POST /api/enquire`, the one endpoint behind every public form: Cloudflare Turnstile check (`src/lib/turnstile.ts`) → server-side validation (`src/lib/enquiry-schemas.ts`) → `enquiries` table → email to the owner via Resend (`src/lib/notify.ts`, optional). Browser side: `src/scripts/enquiry-forms.ts` + `TurnstileWidget.astro`. Needs the Worker secret `TURNSTILE_SECRET_KEY` (local: test secret in `.dev.vars`; `astro dev` uses Turnstile's always-pass test site key). No Astro Actions and no Web3Forms.
 - `migrations/` — schema (`0001` init, `0002` auth, `0003` categories + videos, `0004` gallery, `0005` itinerary details).
   `seed.sql` — content extracted from the original HTML (18 tours, 6 journal posts).
 - Extra seed files (all idempotent, content written for the tour pages; see below): `seed-gallery.sql`,

@@ -1,3 +1,12 @@
 # Copy to .dev.vars for local development. Never commit real values.
 # Generate a value with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 AUTH_SECRET=
+
+# Contact forms (POST /api/enquire).
+# TURNSTILE_SECRET_KEY: production = the secret from the Cloudflare Turnstile widget (`npx wrangler secret put TURNSTILE_SECRET_KEY`).
+# For local development use Cloudflare's published test secret, which always passes:
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# Optional: email notification through Resend (resend.com). Without RESEND_API_KEY enquiries are still saved in D1.
+# RESEND_API_KEY=
+# ENQUIRY_FROM_EMAIL="Altara Bhutan <enquiries@altarabhutan.com>"   # needs the domain verified in Resend
+# ENQUIRY_TO_EMAIL=owner@example.com                                # defaults to the address in src/lib/notify.ts

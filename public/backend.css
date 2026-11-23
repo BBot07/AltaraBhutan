@@ -20,3 +20,8 @@
 .video-card figcaption{margin-top:12px;font-size:14px;font-weight:600;letter-spacing:0.05em;color:var(--color-primary-dark);line-height:1.4;}
 @media (max-width:900px){.video-grid{grid-template-columns:repeat(2,1fr);}}
 @media (max-width:600px){.video-grid{grid-template-columns:1fr;}}
+
+/* Cloudflare Turnstile slot above the submit button, and the form-level message under it. */
+.form-notice[hidden]{display:none;}
+.form-field--captcha{margin:6px 0 18px;min-height:65px;}
+.field-error-text.js-api-err{display:block;}

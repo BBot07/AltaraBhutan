@@ -30,5 +30,9 @@
   "kv_namespaces": [{ "binding": "SESSION", "id": "15de86bdcdd74fa681ffb13032cc0b00" }],
   // Uploaded tour photos (served from /media/uploads/...). Locally this is simulated on disk.
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "altara-media" }]
-  // The admin login secret is not stored here: run `npx wrangler secret put AUTH_SECRET` once the Worker exists.
+  // Secrets are never stored here. Set them once the Worker exists (or in Workers & Pages > altarabhutan > Settings > Variables and Secrets):
+  //   npx wrangler secret put AUTH_SECRET            admin login
+  //   npx wrangler secret put TURNSTILE_SECRET_KEY   Cloudflare Turnstile secret key for the contact forms (required: forms are refused without it)
+  //   npx wrangler secret put RESEND_API_KEY         optional: emails each enquiry to the owner (without it enquiries are only saved in D1)
+  // Optional plain variables: ENQUIRY_TO_EMAIL, ENQUIRY_FROM_EMAIL (see src/lib/notify.ts).
 }

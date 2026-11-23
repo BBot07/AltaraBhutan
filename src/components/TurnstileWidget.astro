@@ -1,0 +1,11 @@
+---
+// Cloudflare Turnstile slot. src/scripts/enquiry-forms.ts loads Cloudflare's script once and renders the widget here.
+// The widget adds a hidden `cf-turnstile-response` field to the surrounding form.
+import { TURNSTILE_SITE_KEY } from '../lib/turnstile';
+---
+
+<div class="form-field form-field--captcha">
+  <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY}></div>
+</div>
+<div class="form-notice form-notice--error" role="alert" data-form-message hidden></div>
+<noscript><p class="form-notice form-notice--error">Please turn on JavaScript to send this form, or email us at hello@altarabhutan.com.</p></noscript>

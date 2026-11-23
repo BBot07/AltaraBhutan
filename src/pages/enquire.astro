@@ -3,12 +3,11 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 import EnquiryForm from '../components/EnquiryForm.astro';
 import PartnerForm from '../components/PartnerForm.astro';
 import FormSelects from '../components/FormSelects.astro';
-import { actions } from 'astro:actions';
 
 export const prerender = false;
 
-// Open on the trade tab after a trade submission, or when linked as /enquire?type=trade.
-const tradeFirst = !!Astro.getActionResult(actions.submitPartnerInquiry) || Astro.url.searchParams.get('type') === 'trade';
+// Open on the trade tab when linked as /enquire?type=trade.
+const tradeFirst = Astro.url.searchParams.get('type') === 'trade';
 ---
 
 <SiteLayout title="Enquire Now — Altara Bhutan" description="Start planning your private Bhutan journey, or send a partnership proposal as a travel agent, hotel or local specialist. Every message is read personally.">
