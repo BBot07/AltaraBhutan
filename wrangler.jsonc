@@ -1,10 +1,21 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "altara",
+  // Cloudflare Workers (SSR) deployment: `npm run deploy` = `astro build && wrangler deploy`.
+  "name": "altarabhutan",
+  // Entry point supplied by @astrojs/cloudflare 14.x (the build rewrites it to dist/server/entry.mjs).
   "main": "@astrojs/cloudflare/entrypoints/server",
-  "compatibility_date": "2026-10-01",
+  // Newest date the installed Cloudflare runtime (workerd 1.20261101, bundled with @astrojs/cloudflare 14.4.4) accepts.
+  // 2026-11-23 fails the build and `astro dev`; raise it once the adapter ships a newer runtime.
+  "compatibility_date": "2026-11-08",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  // Static files (photos, CSS, JS, prerendered pages). The adapter points the real directory at dist/client when it
+  // builds; unmatched URLs fall through to the 404 page instead of the Worker.
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
   "d1_databases": [
     {
       "binding": "DB",
@@ -15,7 +26,8 @@
       "migrations_dir": "migrations"
     }
   ],
-  // Uploaded tour photos. Locally this is simulated on disk; nothing is created online.
-  // TODO (before deploying): run `npx wrangler r2 bucket create altara-media`.
+  // Uploaded tour photos (served from /media/uploads/...). Locally this is simulated on disk; nothing is created online.
+  // TODO (before deploying): run `npx wrangler r2 bucket create altara-media`, or change bucket_name to your bucket.
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "altara-media" }]
+  // The admin login secret is not stored here: run `npx wrangler secret put AUTH_SECRET` once the Worker exists.
 }
