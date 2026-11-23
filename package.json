@@ -20,6 +20,7 @@
     "db:tours:local": "wrangler d1 execute altara-db --local --command \"SELECT id, slug, category, duration_days, status, has_page FROM tours\"",
     "db:migrate:remote": "wrangler d1 migrations apply altara-db --remote",
     "create-admin": "node scripts/create-admin.mjs",
+    "create-admin:remote": "node scripts/create-admin-remote.mjs",
     "db:gallery-seed:local": "wrangler d1 execute altara-db --local --file=seed-gallery.sql",
     "db:cultural-pages:local": "wrangler d1 execute altara-db --local --file=seed-cultural-pages.sql",
     "db:trekking-pages:local": "wrangler d1 execute altara-db --local --file=seed-trekking-pages.sql",

@@ -4,8 +4,8 @@ import { checkCredentials, clearFailures, createSession, hashIp, isLockedOut, re
 
 export const prerender = false;
 
-// Loose on purpose: local admin accounts may use a bare domain such as admin@altara.
-const EMAIL = /^[^\s@]+@[^\s@]+$/;
+// A real email address (name@domain.tld). Only accounts that exist in the admin_users table can sign in.
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 let error = '';
 let email = '';
 

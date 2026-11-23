@@ -1,10 +1,9 @@
-  // Hero video — the markup already has autoplay/muted/playsinline, which
-  // covers most mobile browsers, but some (older Android WebViews, in-app
-  // browsers like Facebook/Instagram) still won't autoplay without an
-  // explicit .play() call, or need the `muted` property set in JS rather
-  // than just the HTML attribute. This makes sure it actually starts, and
-  // retries once on the first touch/click if the initial attempt was
-  // blocked.
+  // Hero video - loaded AFTER the page. The <video> in the markup has no sources, only a poster image and
+  // data-webm / data-mp4 addresses, so the film never competes with the page's CSS, fonts and photos for bandwidth
+  // (this matters on phones). Once the page has fully loaded and the browser is idle, the sources are attached and
+  // the film starts. It is skipped for visitors on Data Saver / 2G or who prefer reduced motion: they keep the
+  // poster. The play() calls also cover older Android WebViews and in-app browsers that need an explicit start
+  // (and a retry on the first touch / click).
   (function(){
     var video = document.querySelector('.hero-video');
     if(!video) return;
@@ -13,9 +12,35 @@
       var p = video.play();
       if(p && p.catch) p.catch(function(){});
     }
-    tryPlay();
-    document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
-    document.addEventListener('click', tryPlay, { once: true });
+    function attach(){
+      if(video.getAttribute('data-ready')) return;
+      var conn = navigator.connection || {};
+      var thin = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
+      var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(thin || calm) return;
+      video.setAttribute('data-ready', '1');
+      var webm = video.getAttribute('data-webm');
+      var mp4 = video.getAttribute('data-mp4');
+      var list = [];
+      if(webm && video.canPlayType('video/webm; codecs="vp9"')) list.push([webm, 'video/webm']);
+      if(mp4) list.push([mp4, 'video/mp4']);
+      list.forEach(function(item){
+        var source = document.createElement('source');
+        source.src = item[0];
+        source.type = item[1];
+        video.appendChild(source);
+      });
+      video.load();
+      tryPlay();
+    }
+    function schedule(){
+      if(window.requestIdleCallback) window.requestIdleCallback(attach, { timeout: 3000 });
+      else setTimeout(attach, 1200);
+    }
+    if(document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule);
+    document.addEventListener('touchstart', function(){ if(video.getAttribute('data-ready')) tryPlay(); }, { once: true, passive: true });
+    document.addEventListener('click', function(){ if(video.getAttribute('data-ready')) tryPlay(); }, { once: true });
   })();
 
   // Header scroll state — two independent concerns toggled off the same

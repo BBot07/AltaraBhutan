@@ -25,6 +25,9 @@
       "migrations_dir": "migrations"
     }
   ],
+  // Key-value store the Astro Cloudflare adapter uses for sessions. Created with `npx wrangler kv namespace create SESSION`,
+  // so a deploy never depends on it being auto-created.
+  "kv_namespaces": [{ "binding": "SESSION", "id": "15de86bdcdd74fa681ffb13032cc0b00" }],
   // Uploaded tour photos (served from /media/uploads/...). Locally this is simulated on disk.
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "altara-media" }]
   // The admin login secret is not stored here: run `npx wrangler secret put AUTH_SECRET` once the Worker exists.
