@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  // TODO: replace with the real production URL (used for canonical URLs and the sitemap).
+  // Production URL (used for canonical URLs, Open Graph images and the sitemap).
   site: 'https://altarabhutan.com',
 
   // Server output: pages render on demand by default. Static pages opt in with `export const prerender = true;`.
