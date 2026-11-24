@@ -29,7 +29,12 @@
   // so a deploy never depends on it being auto-created.
   "kv_namespaces": [{ "binding": "SESSION", "id": "15de86bdcdd74fa681ffb13032cc0b00" }],
   // Uploaded tour photos (served from /media/uploads/...). Locally this is simulated on disk.
-  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "altara-media" }]
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "altara-media" }],
+  // Enquiry emails (src/lib/notify.ts). The sender must be on a domain verified in Resend. Change TO to hello@altarabhutan.com when ready.
+  "vars": {
+    "ENQUIRY_FROM_EMAIL": "Altara Bhutan <enquiries@altarabhutan.com>",
+    "ENQUIRY_TO_EMAIL": "basanbt07@gmail.com"
+  }
   // Secrets are never stored here. Set them once the Worker exists (or in Workers & Pages > altarabhutan > Settings > Variables and Secrets):
   //   npx wrangler secret put AUTH_SECRET            admin login
   //   npx wrangler secret put TURNSTILE_SECRET_KEY   Cloudflare Turnstile secret key for the contact forms (required: forms are refused without it)
